@@ -35,11 +35,7 @@ func MakeWithdraw(db *sql.DB) gin.HandlerFunc {
 
 func GetAllTransactions(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		trans, err := getAllTransactions(ctx, db)
-		if err != nil {
-			ctx.JSON(500, err.Error())
-			return
-		}
+		trans, _ := getAllTransactions(ctx, db)
 		ctx.JSON(200, gin.H{"transactions": trans})
 	}
 

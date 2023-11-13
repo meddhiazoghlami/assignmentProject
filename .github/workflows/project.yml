@@ -17,5 +17,5 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v2
-      - name: Build the stack
+      - name: Build the Go+Postgres App using Docker
         run: docker-compose up -d
