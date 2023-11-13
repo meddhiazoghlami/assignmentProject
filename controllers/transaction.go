@@ -4,6 +4,7 @@ import (
 	"assignmentProject/models"
 	"database/sql"
 	"errors"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -12,31 +13,39 @@ func MakeDeposit(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		err := makeDeposit(ctx, db)
 		if err != nil {
-			ctx.JSON(500, err.Error())
+			fmt.Println("error", err)
 			return
 		}
-
-		ctx.JSON(200, gin.H{"message": "Your deposit is done successfully"})
+		ctx.JSON(200, gin.H{
+			"status":  200,
+			"message": "Your deposit is done successfully"})
 	}
-
 }
 
 func MakeWithdraw(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		err := makeWithdraw(ctx, db)
 		if err != nil {
-			ctx.JSON(500, err.Error())
+			fmt.Println("error", err)
 			return
 		}
-		ctx.JSON(200, gin.H{"message": "Your withdraw is done successfully"})
+		ctx.JSON(200, gin.H{
+			"status":  200,
+			"message": "Your withdraw is done successfully"})
 	}
 
 }
 
 func GetAllTransactions(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		trans, _ := getAllTransactions(ctx, db)
-		ctx.JSON(200, gin.H{"transactions": trans})
+		trans, err := getAllTransactions(ctx, db)
+		if err != nil {
+			fmt.Println("error", err)
+			return
+		}
+		ctx.JSON(200, gin.H{
+			"status":       200,
+			"transactions": trans})
 	}
 
 }
@@ -57,12 +66,12 @@ func makeDeposit(ctx *gin.Context, db *sql.DB) error {
 		ctx.AbortWithStatusJSON(400, gin.H{
 			"error": "Amount should be higher than 0",
 		})
-		return err
+		return errors.New("Amount is Negative")
 	}
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{
-			"error": "Something went wrong",
+		ctx.AbortWithStatusJSON(500, gin.H{
+			"error": "Something went wrong (starting with the transaction)",
 		})
 		return err
 	}
@@ -74,7 +83,7 @@ func makeDeposit(ctx *gin.Context, db *sql.DB) error {
 	_, err = tx.ExecContext(ctx, sqlStatement, depositReq.Amount, wallet_id)
 	if err != nil {
 		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": "Something went wrong",
+			"error": "Something went wrong (Updating went wrong)",
 		})
 		return err
 	}
@@ -84,18 +93,17 @@ func makeDeposit(ctx *gin.Context, db *sql.DB) error {
 	_, err = tx.ExecContext(ctx, sqlStatement2, t_type, depositReq.Amount, wallet_id)
 	if err != nil {
 		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": "Something went wrong",
+			"error": "Something went wrong (creating a transaction)",
 		})
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
 		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": "Something went wrong",
+			"error": "Something went wrong (Commiting the context transaction)",
 		})
 		return err
 	}
-
 	return err
 }
 
@@ -103,7 +111,10 @@ func makeWithdraw(ctx *gin.Context, db *sql.DB) error {
 	wallet_id := ctx.Param("wallet_id")
 	depositReq := models.DepositRequest{}
 	if depositReq.Amount.IsNegative() {
-		return errors.New("Amount should be higher than 0")
+		ctx.AbortWithStatusJSON(400, gin.H{
+			"error": "Amount should be higher than 0",
+		})
+		return errors.New("Amount is Negative")
 	}
 	wallet := models.Wallet{}
 	err := ctx.BindJSON(&depositReq)
@@ -122,6 +133,9 @@ func makeWithdraw(ctx *gin.Context, db *sql.DB) error {
 		return err
 	}
 	if depositReq.Amount.GreaterThan(wallet.Balance) {
+		ctx.AbortWithStatusJSON(400, gin.H{
+			"error": "You Do Not have enough money.",
+		})
 		return errors.New("You Dont have enough money")
 	}
 
@@ -192,5 +206,4 @@ func getAllTransactions(ctx *gin.Context, db *sql.DB) ([]models.Transaction, err
 		return allTrans, err
 	}
 	return trans, err
-
 }
