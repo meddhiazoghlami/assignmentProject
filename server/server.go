@@ -15,7 +15,7 @@ type Server struct {
 func (s *Server) SetupRouter() *gin.Engine {
 
 	r := gin.Default()
-	//add user
+	//add User
 	r.POST("/users", controllers.AddUser(s.Db))
 	//add wallet to a specific user
 	r.POST("/users/:id/wallets", controllers.AddWallet(s.Db))
