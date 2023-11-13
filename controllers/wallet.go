@@ -10,13 +10,8 @@ import (
 
 func AddWallet(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		wallet, err := addWallet(ctx, db)
-		if err != nil {
-			ctx.JSON(500, err.Error())
-			return
-		}
+		wallet := addWallet(ctx, db)
 		ctx.JSON(200, gin.H{"data": wallet})
-
 	}
 }
 
@@ -51,14 +46,20 @@ func GetBalance(db *sql.DB) gin.HandlerFunc {
 
 //Services
 
-func addWallet(ctx *gin.Context, db *sql.DB) (models.Wallet, error) {
+func addWallet(ctx *gin.Context, db *sql.DB) models.Wallet {
 	user_id := ctx.Param("id")
 	wallet := models.Wallet{}
 	ctx.BindJSON(&wallet)
 	sqlStatement := `INSERT INTO wallets (currency,user_id) VALUES ($1,$2) RETURNING wallet_id`
 	err := db.QueryRow(sqlStatement, wallet.Currency, user_id).Scan(&wallet.Wallet_id)
+	if err != nil {
+		ctx.JSON(500, gin.H{
+			"status":  500,
+			"message": err.Error(),
+		})
+	}
 
-	return wallet, err
+	return wallet
 }
 
 func getWallet(ctx *gin.Context, db *sql.DB) (models.Wallet, error) {
