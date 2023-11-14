@@ -28,9 +28,6 @@ func TestGetBalanceRoute(t *testing.T) {
 			w := httptest.NewRecorder()
 			req, _ := http.NewRequest("GET", "/users/"+uValue+"/wallets/"+wValue+"/balance", nil)
 			router.ServeHTTP(w, req)
-			fmt.Println("Request:", req)
-			fmt.Println("Response Code:", w.Code)
-			fmt.Println("Response Body:", w.Body.String())
 			assert.Equal(t, 200, w.Code)
 			// assert.Equal(t, string("{\"balance\":\"1800\"}"), w.Body.String())
 		}
