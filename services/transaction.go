@@ -10,8 +10,6 @@ import (
 	"github.com/shopspring/decimal"
 )
 
-// Services
-
 func MakeDeposit(ctx context.Context, db *sql.DB, wallet_id string, amount decimal.Decimal) error {
 	if amount.IsNegative() {
 		ClientErr := errors.New("Amount you provided is negative")
