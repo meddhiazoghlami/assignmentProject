@@ -106,7 +106,7 @@ func MakeWithdraw(ctx context.Context, db *sql.DB, wallet_id string, amount deci
 		return ServerErr
 	}
 
-	return errors.New("In")
+	return err
 }
 
 func GetAllTransactions(ctx context.Context, db *sql.DB) ([]models.Transaction, error) {

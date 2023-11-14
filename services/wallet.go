@@ -3,6 +3,7 @@ package services
 import (
 	"assignmentProject/models"
 	"database/sql"
+	"errors"
 	"fmt"
 )
 
@@ -28,7 +29,7 @@ func GetWallet(db *sql.DB, wallet_id string) (models.Wallet, error) {
 	return wallet, err
 }
 
-func GetBalance(db *sql.DB, wallet_id string) (models.Wallet, error) {
+func GetBalance(db *sql.DB, wallet_id string, user_id string) (models.Wallet, error) {
 
 	wallet := models.Wallet{}
 	sqlStatement := `SELECT * FROM wallets WHERE wallet_id = $1`
@@ -36,6 +37,10 @@ func GetBalance(db *sql.DB, wallet_id string) (models.Wallet, error) {
 	if err != nil {
 		fmt.Println("err", err)
 		return wallet, err
+	}
+	if user_id != wallet.User_id {
+		fmt.Println("err", errors.New("The wallet of this user doesn't exist"))
+		return wallet, errors.New("The wallet of this user doesn't exist")
 	}
 	return wallet, err
 }

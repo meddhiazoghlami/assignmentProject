@@ -12,7 +12,13 @@ func AddWallet(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		user_id := ctx.Param("id")
 		wallet := models.Wallet{}
-		ctx.BindJSON(&wallet)
+		errs := ctx.BindJSON(&wallet)
+		if errs != nil {
+			ctx.AbortWithStatusJSON(400, gin.H{
+				"status":  400,
+				"message": errs.Error(),
+			})
+		}
 		wallet, err := services.AddWallet(db, user_id, wallet)
 		if err != nil {
 			ctx.AbortWithStatusJSON(500, gin.H{
@@ -45,13 +51,15 @@ func GetWallet(db *sql.DB) gin.HandlerFunc {
 
 func GetBalance(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
+		user_id := ctx.Param("id")
 		wallet_id := ctx.Param("wallet_id")
-		wallet, err := services.GetBalance(db, wallet_id)
+		wallet, err := services.GetBalance(db, wallet_id, user_id)
 		if err != nil {
 			ctx.AbortWithStatusJSON(500, gin.H{
 				"status":  500,
 				"message": err.Error(),
 			})
+			return
 		}
 
 		ctx.JSON(200, gin.H{"balance": wallet.Balance})
