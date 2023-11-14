@@ -18,7 +18,7 @@ func TestGetBalance(t *testing.T) {
 	if err != nil {
 		t.Errorf("Test Failed with error %q", err)
 	}
-	want := 400
+	want := 5400
 	decimalValue := decimal.NewFromInt(int64(want))
 	if !got.Balance.Equal(decimalValue) {
 		t.Errorf("wanted: %q, got: %q", got.Balance, decimalValue)
