@@ -2,18 +2,28 @@ package controllers
 
 import (
 	"assignmentProject/models"
+	"assignmentProject/services"
 	"database/sql"
-	"errors"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
 func MakeDeposit(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		err := makeDeposit(ctx, db)
+		wallet_id := ctx.Param("wallet_id")
+		dpReq := models.DepositRequest{}
+		err := ctx.BindJSON(&dpReq)
 		if err != nil {
-			fmt.Println("error", err)
+			ctx.AbortWithStatusJSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		errs := services.MakeDeposit(ctx.Request.Context(), db, wallet_id, dpReq.Amount)
+		if errs != nil {
+			ctx.AbortWithStatusJSON(500, gin.H{
+				"error": errs.Error(),
+			})
 			return
 		}
 		ctx.JSON(200, gin.H{
@@ -24,9 +34,20 @@ func MakeDeposit(db *sql.DB) gin.HandlerFunc {
 
 func MakeWithdraw(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		err := makeWithdraw(ctx, db)
+		wallet_id := ctx.Param("wallet_id")
+		dpReq := models.DepositRequest{}
+		err := ctx.BindJSON(&dpReq)
 		if err != nil {
-			fmt.Println("error", err)
+			ctx.AbortWithStatusJSON(400, gin.H{
+				"error": err.Error(),
+			})
+			return
+		}
+		errs := services.MakeWithdraw(ctx.Request.Context(), db, wallet_id, dpReq.Amount)
+		if errs != nil {
+			ctx.AbortWithStatusJSON(500, gin.H{
+				"error": errs.Error(),
+			})
 			return
 		}
 		ctx.JSON(200, gin.H{
@@ -38,9 +59,11 @@ func MakeWithdraw(db *sql.DB) gin.HandlerFunc {
 
 func GetAllTransactions(db *sql.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		trans, err := getAllTransactions(ctx, db)
+		trans, err := services.GetAllTransactions(ctx.Request.Context(), db)
 		if err != nil {
-			fmt.Println("error", err)
+			ctx.AbortWithStatusJSON(500, gin.H{
+				"error": err.Error(),
+			})
 			return
 		}
 		ctx.JSON(200, gin.H{
@@ -48,162 +71,4 @@ func GetAllTransactions(db *sql.DB) gin.HandlerFunc {
 			"transactions": trans})
 	}
 
-}
-
-// Services
-
-func makeDeposit(ctx *gin.Context, db *sql.DB) error {
-	wallet_id := ctx.Param("wallet_id")
-	depositReq := models.DepositRequest{}
-	err := ctx.BindJSON(&depositReq)
-	if err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{
-			"error": err.Error(),
-		})
-		return err
-	}
-	if depositReq.Amount.IsNegative() {
-		ctx.AbortWithStatusJSON(400, gin.H{
-			"error": "Amount should be higher than 0",
-		})
-		return errors.New("Amount is Negative")
-	}
-	tx, err := db.BeginTx(ctx, nil)
-	if err != nil {
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": "Something went wrong (starting with the transaction)",
-		})
-		return err
-	}
-	// Defer a rollback in case anything fails.
-	defer tx.Rollback()
-
-	sqlStatement := `UPDATE wallets SET balance = balance + $1 WHERE wallet_id = $2`
-
-	_, err = tx.ExecContext(ctx, sqlStatement, depositReq.Amount, wallet_id)
-	if err != nil {
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": "Something went wrong (Updating went wrong)",
-		})
-		return err
-	}
-
-	sqlStatement2 := `INSERT INTO transactions (tran_type,amount,wallet_id) VALUES ($1,$2,$3)`
-	t_type := "deposit"
-	_, err = tx.ExecContext(ctx, sqlStatement2, t_type, depositReq.Amount, wallet_id)
-	if err != nil {
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": "Something went wrong (creating a transaction)",
-		})
-		return err
-	}
-
-	if err = tx.Commit(); err != nil {
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": "Something went wrong (Commiting the context transaction)",
-		})
-		return err
-	}
-	return err
-}
-
-func makeWithdraw(ctx *gin.Context, db *sql.DB) error {
-	wallet_id := ctx.Param("wallet_id")
-	depositReq := models.DepositRequest{}
-	if depositReq.Amount.IsNegative() {
-		ctx.AbortWithStatusJSON(400, gin.H{
-			"error": "Amount should be higher than 0",
-		})
-		return errors.New("Amount is Negative")
-	}
-	wallet := models.Wallet{}
-	err := ctx.BindJSON(&depositReq)
-	if err != nil {
-		ctx.AbortWithStatusJSON(400, gin.H{
-			"error": err.Error(),
-		})
-		return err
-	}
-	sqlSt := `SELECT * FROM wallets WHERE wallet_id = $1`
-	err = db.QueryRow(sqlSt, wallet_id).Scan(&wallet.Wallet_id, &wallet.Created_date, &wallet.Balance, &wallet.Currency, &wallet.User_id)
-	if err != nil {
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": err.Error(),
-		})
-		return err
-	}
-	if depositReq.Amount.GreaterThan(wallet.Balance) {
-		ctx.AbortWithStatusJSON(400, gin.H{
-			"error": "You Do Not have enough money.",
-		})
-		return errors.New("You Dont have enough money")
-	}
-
-	tx, err := db.BeginTx(ctx, nil)
-	if err != nil {
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": err.Error(),
-		})
-		return err
-	}
-	// Defer a rollback in case anything fails.
-	defer tx.Rollback()
-
-	sqlStatement := `UPDATE wallets SET balance = balance - $2 WHERE wallet_id = $1`
-
-	_, err = tx.ExecContext(ctx, sqlStatement, wallet_id, depositReq.Amount)
-	if err != nil {
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": err.Error(),
-		})
-		return err
-	}
-
-	sqlStatement2 := `INSERT INTO transactions (tran_type,amount,wallet_id) VALUES ($1,$2,$3)`
-	t_type := "withdraw"
-	_, err = tx.ExecContext(ctx, sqlStatement2, t_type, depositReq.Amount, wallet_id)
-	if err != nil {
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": err.Error(),
-		})
-		return err
-	}
-
-	if err = tx.Commit(); err != nil {
-		ctx.AbortWithStatusJSON(500, gin.H{
-			"error": err.Error(),
-		})
-		return err
-	}
-
-	return err
-}
-
-func getAllTransactions(ctx *gin.Context, db *sql.DB) ([]models.Transaction, error) {
-
-	var trans []models.Transaction
-	var allTrans []models.Transaction
-	transaction := models.Transaction{}
-	sqlStatement := `SELECT * FROM transactions`
-	rows, err := db.Query(sqlStatement)
-	if err != nil {
-		ctx.JSON(500, err.Error())
-		return trans, err
-	}
-	defer rows.Close()
-
-	for rows.Next() {
-		err := rows.Scan(&transaction.Tran_id, &transaction.Tran_type, &transaction.Amount, &transaction.Tran_date, &transaction.Wallet_id)
-		if err != nil {
-			ctx.JSON(500, err.Error())
-			return allTrans, err
-		}
-
-		trans = append(trans, transaction)
-	}
-	if err := rows.Err(); err != nil {
-		ctx.JSON(500, err.Error())
-		return allTrans, err
-	}
-	return trans, err
 }
