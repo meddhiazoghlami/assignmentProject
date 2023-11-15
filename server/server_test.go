@@ -9,6 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -43,11 +44,12 @@ func TestMakeDepositRoute(t *testing.T) {
 	router := server.SetupRouter()
 
 	type MockAmount struct {
-		Amount int `json:"amount"`
+		Amount decimal.Decimal `json:"amount"`
 	}
+	amount := 123.567
 
 	reqBody := &MockAmount{
-		Amount: 1300,
+		Amount: decimal.NewFromFloat(float64(amount)),
 	}
 
 	jsonData, err := json.Marshal(reqBody)
@@ -67,7 +69,7 @@ func TestMakeDepositRoute(t *testing.T) {
 
 	// If success withdraw the sum amount added (to not affect DB changes)
 	reqBodys := &MockAmount{
-		Amount: 1300,
+		Amount: decimal.NewFromFloat(float64(amount)),
 	}
 	jsonDatas, err := json.Marshal(reqBodys)
 	if err != nil {
@@ -87,11 +89,11 @@ func TestMakeWithdrawRoute(t *testing.T) {
 	router := server.SetupRouter()
 
 	type MockAmount struct {
-		Amount int `json:"amount"`
+		Amount decimal.Decimal `json:"amount"`
 	}
-
+	amount := 123.567
 	reqBody := &MockAmount{
-		Amount: 500,
+		Amount: decimal.NewFromFloat(float64(amount)),
 	}
 
 	jsonData, err := json.Marshal(reqBody)
@@ -110,7 +112,7 @@ func TestMakeWithdrawRoute(t *testing.T) {
 
 	// If success deposit the same amount removed (to not affect DB changes)
 	reqBodys := &MockAmount{
-		Amount: 500,
+		Amount: decimal.NewFromFloat(float64(amount)),
 	}
 	jsonDatas, err := json.Marshal(reqBodys)
 	if err != nil {
