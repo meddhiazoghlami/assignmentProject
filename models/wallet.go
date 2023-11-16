@@ -7,5 +7,5 @@ type Wallet struct {
 	Created_date string          `json:"created_date"`
 	Balance      decimal.Decimal `json:"balance"`
 	Currency     string          `json:"currency" binding:"required"`
-	User_id      string          `json:"user_id" binding:"required"`
+	User_id      string          `json:"user_id"`
 }
