@@ -5,22 +5,17 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"fmt"
 
 	"github.com/shopspring/decimal"
 )
 
 func MakeDeposit(ctx context.Context, db *sql.DB, wallet_id string, amount decimal.Decimal) error {
 	if amount.IsNegative() {
-		ClientErr := errors.New("Amount you provided is negative")
-		fmt.Println("err", ClientErr)
-		return ClientErr
+		return errors.New("Amount you provided is negative")
 	}
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		ServerErr := errors.New("Something Went wrong.(Start transaction)")
-		fmt.Println("err", ServerErr)
-		return ServerErr
+		return errors.New("Something Went wrong.(Start transaction)")
 	}
 	// Defer a rollback in case anything fails.
 	defer tx.Rollback()
@@ -29,53 +24,39 @@ func MakeDeposit(ctx context.Context, db *sql.DB, wallet_id string, amount decim
 
 	_, err = tx.ExecContext(ctx, sqlStatement, amount, wallet_id)
 	if err != nil {
-		ServerErr := errors.New("Something Went wrong.(DB:Update wallet)")
-		fmt.Println("err", ServerErr)
-		return ServerErr
+		return errors.New("Something Went wrong.(DB:Update wallet)")
 	}
 
 	sqlStatement2 := `INSERT INTO transactions (tran_type,amount,wallet_id) VALUES ($1,$2,$3)`
 	t_type := "deposit"
 	_, err = tx.ExecContext(ctx, sqlStatement2, t_type, amount, wallet_id)
 	if err != nil {
-		ServerErr := errors.New("Something Went wrong.(DB:Create transaction)")
-		fmt.Println("err", ServerErr)
-		return ServerErr
+		return errors.New("Something Went wrong.(DB:Create transaction)")
 	}
 
 	if err = tx.Commit(); err != nil {
-		ServerErr := errors.New("Something Went wrong.(Commit Tx)")
-		fmt.Println("err", ServerErr)
-		return ServerErr
+		return errors.New("Something Went wrong.(Commit Tx)")
 	}
 	return err
 }
 
 func MakeWithdraw(ctx context.Context, db *sql.DB, wallet_id string, amount decimal.Decimal) error {
 	if amount.IsNegative() {
-		ClientErr := errors.New("Amount you provided is negative")
-		fmt.Println("err", ClientErr)
-		return ClientErr
+		return errors.New("Amount you provided is negative")
 	}
 	wallet := models.Wallet{}
 	sqlSt := `SELECT * FROM wallets WHERE wallet_id = $1`
 	err := db.QueryRow(sqlSt, wallet_id).Scan(&wallet.Wallet_id, &wallet.Created_date, &wallet.Balance, &wallet.Currency, &wallet.User_id)
 	if err != nil {
-		ServerErr := errors.New("Something Went wrong.(DB)")
-		fmt.Println("err", ServerErr)
-		return ServerErr
+		return errors.New("Something Went wrong.(DB)")
 	}
 	if amount.GreaterThan(wallet.Balance) {
-		ClientErr := errors.New("Not enough balance to perform your action.")
-		fmt.Println("err", ClientErr)
-		return ClientErr
+		return errors.New("Not enough balance to perform your action.")
 	}
 
 	tx, err := db.BeginTx(ctx, nil)
 	if err != nil {
-		ServerErr := errors.New("Something Went wrong.(Start transaction)")
-		fmt.Println("err", ServerErr)
-		return ServerErr
+		return errors.New("Something Went wrong.(Start transaction)")
 	}
 	// Defer a rollback in case anything fails.
 	defer tx.Rollback()
@@ -84,24 +65,18 @@ func MakeWithdraw(ctx context.Context, db *sql.DB, wallet_id string, amount deci
 
 	_, err = tx.ExecContext(ctx, sqlStatement, wallet_id, amount)
 	if err != nil {
-		ServerErr := errors.New("Something Went wrong.(DB:Update wallet)")
-		fmt.Println("err", ServerErr)
-		return ServerErr
+		return errors.New("Something Went wrong.(DB:Update wallet)")
 	}
 
 	sqlStatement2 := `INSERT INTO transactions (tran_type,amount,wallet_id) VALUES ($1,$2,$3)`
 	t_type := "withdraw"
 	_, err = tx.ExecContext(ctx, sqlStatement2, t_type, amount, wallet_id)
 	if err != nil {
-		ServerErr := errors.New("Something Went wrong.(DB:Create transaction)")
-		fmt.Println("err", ServerErr)
-		return ServerErr
+		return errors.New("Something Went wrong.(DB:Create transaction)")
 	}
 
 	if err = tx.Commit(); err != nil {
-		ServerErr := errors.New("Something Went wrong.(Commit Tx)")
-		fmt.Println("err", ServerErr)
-		return ServerErr
+		return errors.New("Something Went wrong.(Commit Tx)")
 	}
 
 	return err
@@ -115,26 +90,20 @@ func GetAllTransactions(ctx context.Context, db *sql.DB) ([]models.Transaction, 
 	sqlStatement := `SELECT * FROM transactions`
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
-		ServerErr := errors.New("Something Went wrong.(DB)")
-		fmt.Println("err", ServerErr)
-		return trans, ServerErr
+		return allTrans, errors.New("Something Went wrong.(DB)")
 	}
 	defer rows.Close()
 
 	for rows.Next() {
 		err := rows.Scan(&transaction.Tran_id, &transaction.Tran_type, &transaction.Amount, &transaction.Tran_date, &transaction.Wallet_id)
 		if err != nil {
-			ServerErr := errors.New("Something Went wrong.(DB)")
-			fmt.Println("err", ServerErr)
-			return allTrans, ServerErr
+			return allTrans, errors.New("Something Went wrong.(DB)")
 		}
 
 		trans = append(trans, transaction)
 	}
 	if err := rows.Err(); err != nil {
-		ServerErr := errors.New("Something Went wrong.(DB)")
-		fmt.Println("err", ServerErr)
-		return allTrans, ServerErr
+		return allTrans, errors.New("Something Went wrong.(DB)")
 	}
 	return trans, err
 }

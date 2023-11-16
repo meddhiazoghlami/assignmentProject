@@ -9,8 +9,8 @@ import (
 
 func AddWallet(db *sql.DB, user_id string, wallet models.Wallet) (models.Wallet, error) {
 
-	sqlStatement := `INSERT INTO wallets (currency,user_id) VALUES ($1,$2) RETURNING wallet_id`
-	err := db.QueryRow(sqlStatement, wallet.Currency, user_id).Scan(&wallet.Wallet_id)
+	sqlStatement := `INSERT INTO wallets (currency,user_id) VALUES ($1,$2) RETURNING *`
+	err := db.QueryRow(sqlStatement, wallet.Currency, user_id).Scan(&wallet.Wallet_id, &wallet.Created_date, &wallet.Balance, &wallet.Currency, &wallet.User_id)
 	if err != nil {
 		fmt.Println("err", err)
 		return wallet, err

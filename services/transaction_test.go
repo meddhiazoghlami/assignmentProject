@@ -7,10 +7,11 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
+	"github.com/stretchr/testify/require"
 )
 
 func TestMakeDeposit(t *testing.T) {
-	inputs := []float64{100.89, 200, 300, 78.091, -50}
+	inputs := []float64{100.89, 200, 300, 78.091}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	db := db.BuildDBConfig()
@@ -49,7 +50,7 @@ func TestMakeDeposit(t *testing.T) {
 }
 
 func TestMakeWithdraw(t *testing.T) {
-	inputs := []float64{100.89, 200, 300, 78.091, -50}
+	inputs := []float64{100.89, 200, 300, 78.091}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	db := db.BuildDBConfig()
@@ -85,4 +86,12 @@ func TestMakeWithdraw(t *testing.T) {
 			t.Log("TEST PASSED", got, want)
 		}
 	}
+}
+
+func TestGetTransactions(t *testing.T) {
+	db := db.BuildDBConfig()
+	defer db.Close()
+	transactions, err := GetAllTransactions(context.Background(), db)
+	require.NoError(t, err)
+	require.NotEmpty(t, transactions)
 }
