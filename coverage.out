@@ -1,6 +1,6 @@
 mode: set
 assignmentProject/services/transaction.go:12.99,13.25 1 1
-assignmentProject/services/transaction.go:13.25,15.3 1 0
+assignmentProject/services/transaction.go:13.25,15.3 1 1
 assignmentProject/services/transaction.go:16.2,17.16 2 1
 assignmentProject/services/transaction.go:17.16,19.3 1 0
 assignmentProject/services/transaction.go:21.2,26.16 4 1
@@ -11,7 +11,7 @@ assignmentProject/services/transaction.go:37.2,37.35 1 1
 assignmentProject/services/transaction.go:37.35,39.3 1 0
 assignmentProject/services/transaction.go:40.2,40.12 1 1
 assignmentProject/services/transaction.go:43.100,44.25 1 1
-assignmentProject/services/transaction.go:44.25,46.3 1 0
+assignmentProject/services/transaction.go:44.25,46.3 1 1
 assignmentProject/services/transaction.go:47.2,50.16 4 1
 assignmentProject/services/transaction.go:50.16,52.3 1 0
 assignmentProject/services/transaction.go:53.2,53.40 1 1
@@ -35,16 +35,16 @@ assignmentProject/services/transaction.go:105.2,105.35 1 1
 assignmentProject/services/transaction.go:105.35,107.3 1 0
 assignmentProject/services/transaction.go:108.2,108.19 1 1
 assignmentProject/services/user.go:9.65,13.16 3 1
-assignmentProject/services/user.go:13.16,15.3 1 0
+assignmentProject/services/user.go:13.16,15.3 1 1
 assignmentProject/services/user.go:17.2,17.18 1 1
-assignmentProject/services/wallet.go:10.89,14.16 3 1
-assignmentProject/services/wallet.go:14.16,17.3 2 0
-assignmentProject/services/wallet.go:18.2,18.20 1 1
-assignmentProject/services/wallet.go:21.69,25.16 4 1
-assignmentProject/services/wallet.go:25.16,28.3 2 0
-assignmentProject/services/wallet.go:29.2,29.20 1 1
-assignmentProject/services/wallet.go:32.86,37.16 4 1
-assignmentProject/services/wallet.go:37.16,40.3 2 0
-assignmentProject/services/wallet.go:41.2,41.31 1 1
-assignmentProject/services/wallet.go:41.31,44.3 2 0
-assignmentProject/services/wallet.go:45.2,45.20 1 1
+assignmentProject/services/wallet.go:9.89,13.16 3 1
+assignmentProject/services/wallet.go:13.16,15.3 1 1
+assignmentProject/services/wallet.go:16.2,16.20 1 1
+assignmentProject/services/wallet.go:19.69,23.16 4 1
+assignmentProject/services/wallet.go:23.16,25.3 1 1
+assignmentProject/services/wallet.go:26.2,26.20 1 1
+assignmentProject/services/wallet.go:29.86,34.16 4 1
+assignmentProject/services/wallet.go:34.16,36.3 1 1
+assignmentProject/services/wallet.go:37.2,37.31 1 1
+assignmentProject/services/wallet.go:37.31,39.3 1 1
+assignmentProject/services/wallet.go:40.2,40.20 1 1

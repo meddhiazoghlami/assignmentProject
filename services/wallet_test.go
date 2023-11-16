@@ -22,11 +22,26 @@ func TestGetBalance(t *testing.T) {
 	} else {
 		t.Log("got:", got)
 	}
-	// want := 5400
-	// decimalValue := decimal.NewFromInt(int64(want))
-	// if !got.Balance.Equal(decimalValue) {
-	// 	t.Errorf("wanted: %q, got: %q", got.Balance, decimalValue)
-	// }
+	user_id2 := "aaaaaaaaaaaaaaaaa"
+	wallet_id2 := "aaaaaaaaaaaaaaaa"
+	_, err2 := GetBalance(db, wallet_id, user_id2)
+	if err2 != nil {
+		assert.Error(t, err2)
+		assert.EqualError(t, err2, "The wallet of this user doesn't exist")
+
+	}
+	wallet3, err3 := GetBalance(db, wallet_id2, user_id)
+	if err3 != nil {
+		assert.Error(t, err3)
+		assert.Empty(t, wallet3)
+	}
+	user_id3 := "41582010-aefd-4a2b-a452-141f5688ff36"
+	wallet3, err4 := GetBalance(db, wallet_id, user_id3)
+	if err4 != nil {
+		assert.Error(t, err4)
+		assert.EqualError(t, err2, "The wallet of this user doesn't exist")
+		assert.Empty(t, wallet3)
+	}
 }
 
 func TestAddWallet(t *testing.T) {
@@ -43,6 +58,12 @@ func TestAddWallet(t *testing.T) {
 	assert.Equal(t, wallet1.Currency, wallet2.Currency)
 	assert.Equal(t, user_id, wallet2.User_id)
 	assert.Equal(t, balanceCompare, true)
+
+	user_id2 := "azert"
+	_, err1 := AddWallet(db, user_id2, wallet1)
+	if err1 != nil {
+		assert.Error(t, err1)
+	}
 }
 
 func TestGetWallet(t *testing.T) {
@@ -62,4 +83,9 @@ func TestGetWallet(t *testing.T) {
 	assert.Equal(t, wallet1.Currency, wallet2.Currency)
 	assert.Equal(t, wallet1.Balance, wallet2.Balance)
 	assert.Equal(t, wallet1.Created_date, wallet2.Created_date)
+
+	_, wErr := GetWallet(db, "AZERkk")
+	if wErr != nil {
+		assert.Error(t, wErr)
+	}
 }

@@ -20,4 +20,14 @@ func TestAddUser(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotEmpty(t, user)
 	assert.Equal(t, user.Username, user.Username)
+
+	username2 := models.User{
+		Username: "",
+	}
+
+	user2, err2 := AddUser(db, username2)
+
+	assert.Error(t, err2)
+	assert.Empty(t, user2)
+
 }

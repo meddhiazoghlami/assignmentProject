@@ -11,7 +11,7 @@ import (
 )
 
 func TestMakeDeposit(t *testing.T) {
-	inputs := []float64{100.89, 200, 300, 78.091}
+	inputs := []float64{100.89, 200, 300, 78.091, -67}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	db := db.BuildDBConfig()
@@ -27,9 +27,13 @@ func TestMakeDeposit(t *testing.T) {
 		}
 		balance := wallet.Balance
 		decimalValue := decimal.NewFromFloat(float64(amount))
+
 		err := MakeDeposit(ctx, db, wallet_id, decimalValue)
 		if err != nil {
-			t.Errorf("Test Failed with error %q", err)
+			if decimalValue.IsNegative() {
+				assert.Error(t, err)
+				assert.EqualError(t, err, "Amount you provided is negative")
+			}
 			return
 		}
 
@@ -50,7 +54,7 @@ func TestMakeDeposit(t *testing.T) {
 }
 
 func TestMakeWithdraw(t *testing.T) {
-	inputs := []float64{100.89, 200, 300, 78.091}
+	inputs := []float64{100.89, 200, 300, 78.091, -678}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	db := db.BuildDBConfig()
@@ -68,7 +72,10 @@ func TestMakeWithdraw(t *testing.T) {
 		decimalValue := decimal.NewFromFloat(float64(amount))
 		err := MakeWithdraw(ctx, db, wallet_id, decimalValue)
 		if err != nil {
-			t.Errorf("Test Failed with error %q", err)
+			if decimalValue.IsNegative() {
+				assert.Error(t, err)
+				assert.EqualError(t, err, "Amount you provided is negative")
+			}
 			return
 		}
 
@@ -86,6 +93,7 @@ func TestMakeWithdraw(t *testing.T) {
 			t.Log("TEST PASSED", got, want)
 		}
 	}
+
 }
 
 func TestGetTransactions(t *testing.T) {
