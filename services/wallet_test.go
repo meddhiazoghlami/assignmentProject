@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	"github.com/shopspring/decimal"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetBalance(t *testing.T) {
@@ -38,11 +38,11 @@ func TestAddWallet(t *testing.T) {
 	}
 	wallet2, err := AddWallet(db, user_id, wallet1)
 	balanceCompare := wallet2.Balance.Equal(decimal.NewFromInt(0))
-	require.NoError(t, err)
-	require.NotEmpty(t, wallet2)
-	require.Equal(t, wallet1.Currency, wallet2.Currency)
-	require.Equal(t, user_id, wallet2.User_id)
-	require.Equal(t, balanceCompare, true)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, wallet2)
+	assert.Equal(t, wallet1.Currency, wallet2.Currency)
+	assert.Equal(t, user_id, wallet2.User_id)
+	assert.Equal(t, balanceCompare, true)
 }
 
 func TestGetWallet(t *testing.T) {
@@ -53,13 +53,13 @@ func TestGetWallet(t *testing.T) {
 		Currency: "eur",
 	}
 	wallet1, err := AddWallet(db, user_id, currency)
-	require.NoError(t, err)
+	assert.NoError(t, err)
 	wallet2, err2 := GetWallet(db, wallet1.Wallet_id)
-	require.NoError(t, err2)
-	require.NotEmpty(t, wallet2)
-	require.Equal(t, wallet1.Wallet_id, wallet2.Wallet_id)
-	require.Equal(t, wallet1.User_id, wallet2.User_id)
-	require.Equal(t, wallet1.Currency, wallet2.Currency)
-	require.Equal(t, wallet1.Balance, wallet2.Balance)
-	require.Equal(t, wallet1.Created_date, wallet2.Created_date)
+	assert.NoError(t, err2)
+	assert.NotEmpty(t, wallet2)
+	assert.Equal(t, wallet1.Wallet_id, wallet2.Wallet_id)
+	assert.Equal(t, wallet1.User_id, wallet2.User_id)
+	assert.Equal(t, wallet1.Currency, wallet2.Currency)
+	assert.Equal(t, wallet1.Balance, wallet2.Balance)
+	assert.Equal(t, wallet1.Created_date, wallet2.Created_date)
 }

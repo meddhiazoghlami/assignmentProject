@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/shopspring/decimal"
-	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMakeDeposit(t *testing.T) {
@@ -92,6 +92,6 @@ func TestGetTransactions(t *testing.T) {
 	db := db.BuildDBConfig()
 	defer db.Close()
 	transactions, err := GetAllTransactions(context.Background(), db)
-	require.NoError(t, err)
-	require.NotEmpty(t, transactions)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, transactions)
 }
