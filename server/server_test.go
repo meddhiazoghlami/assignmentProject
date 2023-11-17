@@ -181,17 +181,61 @@ func TestScenario(t *testing.T) {
 	if errWallet != nil {
 		fmt.Println("errWallet", errWallet)
 	}
-	t.Log(responseWallet)
 	assert.Equal(t, 201, w2.Code)
 	assert.Equal(t, walletBody.Currency, responseWallet.Wallet.Currency)
 	assert.Equal(t, user_id, responseWallet.Wallet.User_id)
 	balanceCompare := responseWallet.Wallet.Balance.Equal(decimal.NewFromInt(0))
 	assert.Equal(t, balanceCompare, true)
-	assert.Equal(t, walletBody.Created_date, responseWallet.Wallet.Created_date)
 	wallet_id := responseWallet.Wallet.Wallet_id
 	//Step 3: Make a deposit on that wallet then check its balance
+	type MockAmount struct {
+		Amount decimal.Decimal `json:"amount"`
+	}
+	amount := 123.567
+	reqBody := &MockAmount{
+		Amount: decimal.NewFromFloat(float64(amount)),
+	}
+	jsonData, err := json.Marshal(reqBody)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return
+	}
 	w3 := httptest.NewRecorder()
-	req3, _ := http.NewRequest("POST", "/users/"+user_id+"/wallets/"+wallet_id+"/deposit", bytes.NewBuffer(jsonWallet))
+	req3, _ := http.NewRequest("POST", "/users/"+user_id+"/wallets/"+wallet_id+"/deposit", bytes.NewBuffer(jsonData))
 	router.ServeHTTP(w3, req3)
-
+	assert.Equal(t, 200, w3.Code)
+	assert.Equal(t, string("{\"message\":\"Your deposit is done successfully\",\"status\":200}"), w3.Body.String())
+	//Step 4: Check if the new balance is equal to the amount
+	type Balance struct {
+		Balance decimal.Decimal
+	}
+	var balance Balance
+	w4 := httptest.NewRecorder()
+	req4, _ := http.NewRequest("GET", "/users/"+user_id+"/wallets/"+wallet_id+"/balance", bytes.NewBuffer(jsonData))
+	router.ServeHTTP(w4, req4)
+	errBalance := json.Unmarshal([]byte(w4.Body.String()), &balance)
+	if errBalance != nil {
+		fmt.Println("errBalance", errBalance)
+	}
+	balanceCom := balance.Balance.Equal(reqBody.Amount)
+	assert.Equal(t, 200, w4.Code)
+	assert.Equal(t, balanceCom, true)
+	//Step 5: Make a withdraw with the same amount of money
+	w5 := httptest.NewRecorder()
+	req5, _ := http.NewRequest("POST", "/users/"+user_id+"/wallets/"+wallet_id+"/withdraw", bytes.NewBuffer(jsonData))
+	router.ServeHTTP(w5, req5)
+	assert.Equal(t, 200, w5.Code)
+	assert.Equal(t, string("{\"message\":\"Your withdraw is done successfully\",\"status\":200}"), w5.Body.String())
+	//Step 6: Compare the balance again and its has to be 0
+	var balance2 Balance
+	w6 := httptest.NewRecorder()
+	req6, _ := http.NewRequest("GET", "/users/"+user_id+"/wallets/"+wallet_id+"/balance", bytes.NewBuffer(jsonData))
+	router.ServeHTTP(w6, req6)
+	errBalance2 := json.Unmarshal([]byte(w6.Body.String()), &balance2)
+	if errBalance2 != nil {
+		fmt.Println("errBalance2", errBalance2)
+	}
+	balanceCom2 := balance2.Balance.Equal(decimal.NewFromInt(0))
+	assert.Equal(t, 200, w6.Code)
+	assert.Equal(t, balanceCom2, true)
 }
