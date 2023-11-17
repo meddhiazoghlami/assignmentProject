@@ -54,7 +54,7 @@ func TestMakeDeposit(t *testing.T) {
 }
 
 func TestMakeWithdraw(t *testing.T) {
-	inputs := []float64{100.89, 200, 300, 78.091, -678}
+	inputs := []float64{-678, 78.091, 300, 200, 100.89}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	db := db.BuildDBConfig("test")
