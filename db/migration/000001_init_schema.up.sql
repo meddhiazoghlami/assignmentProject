@@ -28,5 +28,5 @@ CREATE TABLE transactions (
             REFERENCES wallets(wallet_id)
 );
 
-INSERT INTO users (user_id,username) VALUES ('41582010-aefd-4a2b-a452-141f5688ff36',"dhia");
-INSERT INTO wallets (wallet_id,currency,user_id) VALUES ('4a40cb9b-fe20-470c-96b5-ec57f12970e2',"tnd",'41582010-aefd-4a2b-a452-141f5688ff36'); 
+INSERT INTO users (user_id,username) VALUES ('41582010-aefd-4a2b-a452-141f5688ff36','dhia');
+INSERT INTO wallets (wallet_id,currency,user_id) VALUES ('4a40cb9b-fe20-470c-96b5-ec57f12970e2','tnd','41582010-aefd-4a2b-a452-141f5688ff36'); 
