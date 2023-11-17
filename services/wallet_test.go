@@ -10,7 +10,7 @@ import (
 )
 
 func TestGetBalance(t *testing.T) {
-	db := db.BuildDBConfig()
+	db := db.BuildDBConfig("test")
 	defer db.Close()
 
 	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
@@ -45,7 +45,7 @@ func TestGetBalance(t *testing.T) {
 }
 
 func TestAddWallet(t *testing.T) {
-	db := db.BuildDBConfig()
+	db := db.BuildDBConfig("test")
 	defer db.Close()
 	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
 	wallet1 := models.Wallet{
@@ -67,7 +67,7 @@ func TestAddWallet(t *testing.T) {
 }
 
 func TestGetWallet(t *testing.T) {
-	db := db.BuildDBConfig()
+	db := db.BuildDBConfig("test")
 	defer db.Close()
 	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
 	currency := models.Wallet{

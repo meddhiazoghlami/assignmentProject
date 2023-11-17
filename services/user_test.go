@@ -9,7 +9,7 @@ import (
 )
 
 func TestAddUser(t *testing.T) {
-	db := db.BuildDBConfig()
+	db := db.BuildDBConfig("test")
 	defer db.Close()
 
 	username := models.User{

@@ -25,7 +25,7 @@ type ResponseWallet struct {
 }
 
 func TestGetBalanceRoute(t *testing.T) {
-	db := db.BuildDBConfig()
+	db := db.BuildDBConfig("test")
 	defer db.Close()
 	server := &Server{
 		Db: db,
@@ -47,7 +47,7 @@ func TestGetBalanceRoute(t *testing.T) {
 }
 
 func TestMakeDepositRoute(t *testing.T) {
-	db := db.BuildDBConfig()
+	db := db.BuildDBConfig("test")
 	defer db.Close()
 	server := &Server{
 		Db: db,
@@ -92,7 +92,7 @@ func TestMakeDepositRoute(t *testing.T) {
 }
 
 func TestMakeWithdrawRoute(t *testing.T) {
-	db := db.BuildDBConfig()
+	db := db.BuildDBConfig("test")
 	defer db.Close()
 	server := &Server{
 		Db: db,
@@ -137,7 +137,7 @@ func TestMakeWithdrawRoute(t *testing.T) {
 //Scenario
 
 func TestScenario(t *testing.T) {
-	db := db.BuildDBConfig()
+	db := db.BuildDBConfig("test")
 	defer db.Close()
 	server := &Server{
 		Db: db,

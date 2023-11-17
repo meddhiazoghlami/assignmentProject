@@ -19,17 +19,26 @@ type DBConfig struct {
 	Password string
 }
 
-func BuildDBConfig() *sql.DB {
+func BuildDBConfig(typeDB string) *sql.DB {
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
 	}
+	var port, host, name, user, password string
+	if typeDB == "app" {
 
-	port := os.Getenv("DB_PORT")
-	host := os.Getenv("DB_HOST")
-	name := os.Getenv("DB_NAME")
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
+		port = os.Getenv("DB_PORT")
+		host = os.Getenv("DB_HOST")
+		name = os.Getenv("DB_NAME")
+		user = os.Getenv("DB_USER")
+		password = os.Getenv("DB_PASSWORD")
+	} else if typeDB == "test" {
+		port = os.Getenv("DB_PORT_TEST")
+		host = os.Getenv("DB_HOST_TEST")
+		name = os.Getenv("DB_NAME_TEST")
+		user = os.Getenv("DB_USER_TEST")
+		password = os.Getenv("DB_PASSWORD_TEST")
+	}
 
 	a, _ := strconv.Atoi(port)
 

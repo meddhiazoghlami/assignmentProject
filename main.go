@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	db := db.BuildDBConfig()
+	db := db.BuildDBConfig("app")
 	defer db.Close()
 	server := &server.Server{
 		Db: db,
