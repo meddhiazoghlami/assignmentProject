@@ -48,7 +48,7 @@ func TestMakeDeposit(t *testing.T) {
 		if !got.Equal(want) {
 			t.Errorf("got %q, wanted %q", got, want)
 		} else {
-			t.Log("TEST PASSED", got, want)
+			t.Log("TEST PASSED :", got, want)
 		}
 	}
 }
