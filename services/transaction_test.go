@@ -12,7 +12,7 @@ import (
 
 func TestMakeDeposit(t *testing.T) {
 	inputs := []float64{78.091, -67}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
 	db := db.BuildDBConfig("test")
 	defer db.Close()
@@ -64,7 +64,7 @@ func TestMakeDeposit(t *testing.T) {
 
 func TestMakeWithdraw(t *testing.T) {
 	inputs := []float64{78.091, -67}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
 	db := db.BuildDBConfig("test")
 	defer db.Close()
