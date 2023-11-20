@@ -224,6 +224,7 @@ func TestScenario(t *testing.T) {
 	w5 := httptest.NewRecorder()
 	req5, _ := http.NewRequest("POST", "/users/"+user_id+"/wallets/"+wallet_id+"/withdraw", bytes.NewBuffer(jsonData))
 	router.ServeHTTP(w5, req5)
+	t.Log("ss", w5.Body.String())
 	assert.Equal(t, 200, w5.Code)
 	assert.Equal(t, string("{\"message\":\"Your withdraw is done successfully\",\"status\":200}"), w5.Body.String())
 	//Step 6: Compare the balance again and its has to be 0

@@ -72,7 +72,7 @@ func MakeWithdraw(ctx context.Context, db *sql.DB, wallet_id string, amount deci
 
 	sqlStatement0 := `SELECT * FROM wallets WHERE wallet_id = $1 FOR UPDATE`
 
-	_, err = tx.ExecContext(ctx, sqlStatement0, wallet_id, amount)
+	_, err = tx.ExecContext(ctx, sqlStatement0, wallet_id)
 	if err != nil {
 		return errors.New("Something Went wrong.(DB:Update WITHDRAW SELECT FOR UPDATE wallet)")
 	}
