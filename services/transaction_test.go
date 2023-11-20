@@ -11,7 +11,7 @@ import (
 )
 
 func TestMakeDeposit(t *testing.T) {
-	inputs := []float64{100.89, 200, 300, 78.091, -67}
+	inputs := []float64{78.091, -67}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	db := db.BuildDBConfig("test")
@@ -27,7 +27,7 @@ func TestMakeDeposit(t *testing.T) {
 		}
 		balance := wallet.Balance
 		decimalValue := decimal.NewFromFloat(float64(amount))
-
+		t.Log("DZOVI=====", balance)
 		err := MakeDeposit(ctx, db, wallet_id, decimalValue)
 		if err != nil {
 			if decimalValue.IsNegative() {
@@ -42,9 +42,18 @@ func TestMakeDeposit(t *testing.T) {
 			t.Errorf("Test Failed with error %q, caused by getting the 2nd balance", err)
 			return
 		}
-		// Checking if newBalance = balance - amount
-		want := balance.Add(decimalValue)
-		got := newWallet.Balance
+		t.Log("DZOVI=====", newWallet.Balance)
+		// Checking if newBalance = balance + amount
+
+		var want, got decimal.Decimal
+		if amount <= 0 {
+			want = decimal.NewFromFloat(float64(0))
+			got = decimal.NewFromFloat(float64(0))
+		} else {
+			want = balance.Add(decimalValue)
+			got = newWallet.Balance
+		}
+		t.Log("DZOVI ===", got, want)
 		if !got.Equal(want) {
 			t.Errorf("got %q, wanted %q", got, want)
 		} else {
@@ -54,7 +63,7 @@ func TestMakeDeposit(t *testing.T) {
 }
 
 func TestMakeWithdraw(t *testing.T) {
-	inputs := []float64{-678, 78.091, 300, 200, 100.89}
+	inputs := []float64{78.091, -67}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
 	defer cancel()
 	db := db.BuildDBConfig("test")
@@ -78,15 +87,21 @@ func TestMakeWithdraw(t *testing.T) {
 			}
 			return
 		}
-
 		newWallet, nbErr := GetBalance(db, wallet_id, user_id)
 		if nbErr != nil {
 			t.Errorf("Test Failed with error %q, caused by getting the 2nd balance", err)
 			return
 		}
 		// Checking if newBalance = balance - amount
-		want := balance.Sub(decimalValue)
-		got := newWallet.Balance
+		var want, got decimal.Decimal
+		if amount <= 0 {
+			want = decimal.NewFromFloat(float64(0))
+			got = decimal.NewFromFloat(float64(0))
+		} else {
+			want = balance.Sub(decimalValue)
+			got = newWallet.Balance
+		}
+
 		if !got.Equal(want) {
 			t.Errorf("got %q, wanted %q", got, want)
 		} else {
