@@ -89,3 +89,13 @@ func TestGetWallet(t *testing.T) {
 		assert.Error(t, wErr)
 	}
 }
+
+func TestGetUserWallets(t *testing.T) {
+	db := db.BuildDBConfig("test")
+	defer db.Close()
+	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
+	user, err := GetUserWallets(db, user_id)
+	assert.NoError(t, err)
+	assert.NotEmpty(t, user)
+	assert.NotEmpty(t, user.Wallets)
+}

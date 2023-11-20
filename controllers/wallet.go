@@ -66,3 +66,18 @@ func GetBalance(db *sql.DB) gin.HandlerFunc {
 
 	}
 }
+
+func GetUserWallets(db *sql.DB) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		user_id := ctx.Param("id")
+		user, err := services.GetUserWallets(db, user_id)
+		if err != nil {
+			ctx.AbortWithStatusJSON(500, gin.H{
+				"status":  500,
+				"message": err.Error(),
+			})
+			return
+		}
+		ctx.JSON(200, user)
+	}
+}

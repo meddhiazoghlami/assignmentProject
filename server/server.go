@@ -19,6 +19,8 @@ func (s *Server) SetupRouter() *gin.Engine {
 	r.POST("/users", controllers.AddUser(s.Db))
 	//add wallet to a specific user
 	r.POST("/users/:id/wallets", controllers.AddWallet(s.Db))
+	//get all wallets for a specific user
+	r.GET("/users/:id/wallets", controllers.GetUserWallets(s.Db))
 	//get a specific wallet
 	r.GET("/users/:id/wallets/:wallet_id", controllers.GetWallet(s.Db))
 	//make a deposit
