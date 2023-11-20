@@ -20,9 +20,18 @@ func MakeDeposit(ctx context.Context, db *sql.DB, wallet_id string, amount decim
 	// Defer a rollback in case anything fails.
 	defer tx.Rollback()
 
-	sqlStatement := `UPDATE wallets SET balance = balance + $1 WHERE wallet_id = $2`
+	sqlStatement0 := `SELECT * FROM wallets WHERE wallet_id = $1 FOR UPDATE`
 
-	_, err = tx.ExecContext(ctx, sqlStatement, amount, wallet_id)
+	_, err = tx.ExecContext(ctx, sqlStatement0, wallet_id)
+	if err != nil {
+		return errors.New("Something Went wrong.(DB:Select for update wallet)")
+	}
+
+	// sqlStatement := `UPDATE wallets SET balance = balance + $1 WHERE wallet_id = $2`
+
+	sqlStatement1 := `UPDATE wallets SET balance = balance + $1 WHERE wallet_id = $2`
+
+	_, err = tx.ExecContext(ctx, sqlStatement1, amount, wallet_id)
 	if err != nil {
 		return errors.New("Something Went wrong.(DB:Update wallet)")
 	}
@@ -61,9 +70,16 @@ func MakeWithdraw(ctx context.Context, db *sql.DB, wallet_id string, amount deci
 	// Defer a rollback in case anything fails.
 	defer tx.Rollback()
 
-	sqlStatement := `UPDATE wallets SET balance = balance - $2 WHERE wallet_id = $1`
+	sqlStatement0 := `SELECT * FROM wallets WHERE wallet_id = $1 FOR UPDATE`
 
-	_, err = tx.ExecContext(ctx, sqlStatement, wallet_id, amount)
+	_, err = tx.ExecContext(ctx, sqlStatement0, wallet_id, amount)
+	if err != nil {
+		return errors.New("Something Went wrong.(DB:Update WITHDRAW SELECT FOR UPDATE wallet)")
+	}
+
+	sqlStatement1 := `UPDATE wallets SET balance = balance - $2 WHERE wallet_id = $1`
+
+	_, err = tx.ExecContext(ctx, sqlStatement1, wallet_id, amount)
 	if err != nil {
 		return errors.New("Something Went wrong.(DB:Update wallet)")
 	}
