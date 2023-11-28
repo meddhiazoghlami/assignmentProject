@@ -1,9 +1,10 @@
 package controllers
 
 import (
-	"assignmentProject/models"
-	"assignmentProject/services"
 	"database/sql"
+
+	models "github.com/meddhiazoghlami/assignmentProject/models"
+	services "github.com/meddhiazoghlami/assignmentProject/services"
 
 	"github.com/gin-gonic/gin"
 )

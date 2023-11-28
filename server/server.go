@@ -3,7 +3,7 @@ package server
 import (
 	"database/sql"
 
-	"assignmentProject/controllers"
+	controllers "github.com/meddhiazoghlami/assignmentProject/controllers"
 
 	"github.com/gin-gonic/gin"
 )

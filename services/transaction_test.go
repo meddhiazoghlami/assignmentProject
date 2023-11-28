@@ -1,10 +1,14 @@
 package services
 
 import (
-	"assignmentProject/db"
 	"context"
+	"log"
+	"os"
 	"testing"
 	"time"
+
+	"github.com/joho/godotenv"
+	"github.com/meddhiazoghlami/assignmentProject/db"
 
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
@@ -14,7 +18,18 @@ func TestMakeDeposit(t *testing.T) {
 	inputs := []float64{78.091, -67}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
 	wallet_id := "4a40cb9b-fe20-470c-96b5-ec57f12970e2"
@@ -66,7 +81,18 @@ func TestMakeWithdraw(t *testing.T) {
 	inputs := []float64{78.091, -67}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*1)
 	defer cancel()
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
 	wallet_id := "4a40cb9b-fe20-470c-96b5-ec57f12970e2"
@@ -112,7 +138,18 @@ func TestMakeWithdraw(t *testing.T) {
 }
 
 func TestGetTransactions(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	transactions, err := GetAllTransactions(context.Background(), db)
 	assert.NoError(t, err)

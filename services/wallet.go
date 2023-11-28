@@ -1,9 +1,10 @@
 package services
 
 import (
-	"assignmentProject/models"
 	"database/sql"
 	"errors"
+
+	models "github.com/meddhiazoghlami/assignmentProject/models"
 )
 
 func AddWallet(db *sql.DB, user_id string, wallet models.Wallet) (models.Wallet, error) {

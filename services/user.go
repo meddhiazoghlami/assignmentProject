@@ -1,9 +1,10 @@
 package services
 
 import (
-	"assignmentProject/models"
 	"database/sql"
 	"fmt"
+
+	models "github.com/meddhiazoghlami/assignmentProject/models"
 )
 
 func AddUser(db *sql.DB, user models.User) (models.User, error) {

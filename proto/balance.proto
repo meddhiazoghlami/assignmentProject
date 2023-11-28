@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package balance;
+option go_package = "github.com/meddhiazoghlami/assignmentProject/proto";
+
+// The get balance service definition.
+service GetBalance {
+  rpc GetWalletBalance (GetBalanceRequest) returns (GetBalanceReply) ;
+}
+
+// The request message containing the user's id and the wallet's id.
+message GetBalanceRequest {
+  string user_id = 1;
+  string wallet_id = 2;
+}
+
+// The response message containing the greetings
+message GetBalanceReply {
+  float balance = 1;
+}

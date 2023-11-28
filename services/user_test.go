@@ -1,15 +1,30 @@
 package services
 
 import (
-	"assignmentProject/db"
-	"assignmentProject/models"
+	"log"
+	"os"
 	"testing"
+
+	"github.com/joho/godotenv"
+	"github.com/meddhiazoghlami/assignmentProject/db"
+	"github.com/meddhiazoghlami/assignmentProject/models"
 
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAddUser(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 
 	username := models.User{

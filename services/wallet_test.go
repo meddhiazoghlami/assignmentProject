@@ -1,16 +1,31 @@
 package services
 
 import (
-	"assignmentProject/db"
-	"assignmentProject/models"
+	"log"
+	"os"
 	"testing"
+
+	"github.com/joho/godotenv"
+	"github.com/meddhiazoghlami/assignmentProject/db"
+	"github.com/meddhiazoghlami/assignmentProject/models"
 
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestGetBalance(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 
 	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
@@ -45,7 +60,18 @@ func TestGetBalance(t *testing.T) {
 }
 
 func TestAddWallet(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
 	wallet1 := models.Wallet{
@@ -67,7 +93,18 @@ func TestAddWallet(t *testing.T) {
 }
 
 func TestGetWallet(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
 	currency := models.Wallet{
@@ -91,7 +128,18 @@ func TestGetWallet(t *testing.T) {
 }
 
 func TestGetUserWallets(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	user_id := "41582010-aefd-4a2b-a452-141f5688ff36"
 	user, err := GetUserWallets(db, user_id)

@@ -5,8 +5,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"assignmentProject/models"
-	"assignmentProject/services"
+	models "github.com/meddhiazoghlami/assignmentProject/models"
+	services "github.com/meddhiazoghlami/assignmentProject/services"
 )
 
 func AddUser(db *sql.DB) gin.HandlerFunc {

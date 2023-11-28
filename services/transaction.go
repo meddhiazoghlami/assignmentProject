@@ -1,10 +1,11 @@
 package services
 
 import (
-	"assignmentProject/models"
 	"context"
 	"database/sql"
 	"errors"
+
+	models "github.com/meddhiazoghlami/assignmentProject/models"
 
 	"github.com/shopspring/decimal"
 )

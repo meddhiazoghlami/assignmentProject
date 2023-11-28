@@ -1,14 +1,18 @@
 package server
 
 import (
-	"assignmentProject/db"
-	"assignmentProject/models"
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
+
+	"github.com/joho/godotenv"
+	db "github.com/meddhiazoghlami/assignmentProject/db"
+	models "github.com/meddhiazoghlami/assignmentProject/models"
 
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
@@ -25,7 +29,18 @@ type ResponseWallet struct {
 }
 
 func TestGetBalanceRoute(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	server := &Server{
 		Db: db,
@@ -47,7 +62,18 @@ func TestGetBalanceRoute(t *testing.T) {
 }
 
 func TestMakeDepositRoute(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	server := &Server{
 		Db: db,
@@ -92,7 +118,18 @@ func TestMakeDepositRoute(t *testing.T) {
 }
 
 func TestMakeWithdrawRoute(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	server := &Server{
 		Db: db,
@@ -137,7 +174,18 @@ func TestMakeWithdrawRoute(t *testing.T) {
 //Scenario
 
 func TestScenario(t *testing.T) {
-	db := db.BuildDBConfig("test")
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST_TEST"),
+		Port:     os.Getenv("DB_PORT_TEST"),
+		User:     os.Getenv("DB_USER_TEST"),
+		Password: os.Getenv("DB_PASSWORD_TEST"),
+		Dbname:   os.Getenv("DB_NAME_TEST"),
+	}
+	db := db.BuildDBConfig(dbconfig)
 	defer db.Close()
 	server := &Server{
 		Db: db,
