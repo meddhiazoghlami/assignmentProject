@@ -47,13 +47,13 @@ func (s *servers) GetWalletBalance(ctx context.Context, in *pb.GetBalanceRequest
 var RootCmd = &cobra.Command{Use: "app"}
 
 var runCmd = &cobra.Command{
-	Use:   "run",
+	Use:   "with",
 	Short: "Run the application",
 	Run: func(cmd *cobra.Command, args []string) {
-		withGin, _ := cmd.Flags().GetBool("rest")
+		withRest, _ := cmd.Flags().GetBool("rest")
 		withGRPC, _ := cmd.Flags().GetBool("grpc")
 
-		if withGin {
+		if withRest {
 			runWithRest()
 		} else if withGRPC {
 			runWithGRPC()
