@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net"
@@ -9,40 +8,12 @@ import (
 
 	"github.com/joho/godotenv"
 	"github.com/meddhiazoghlami/assignmentProject/db"
+	"github.com/meddhiazoghlami/assignmentProject/grpcserver"
+	server "github.com/meddhiazoghlami/assignmentProject/httpserver"
 	pb "github.com/meddhiazoghlami/assignmentProject/proto"
-	"github.com/meddhiazoghlami/assignmentProject/server"
-	"github.com/meddhiazoghlami/assignmentProject/services"
 	"github.com/spf13/cobra"
 	"google.golang.org/grpc"
 )
-
-type servers struct {
-	pb.UnimplementedGetBalanceServer
-}
-
-// GetWalletBalance implements grpcservice.GetBalanceServer
-func (s *servers) GetWalletBalance(ctx context.Context, in *pb.GetBalanceRequest) (*pb.GetBalanceReply, error) {
-	log.Printf("Received: %v also: %v", in.GetUserId(), in.GetWalletId())
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatalf("Error loading .env file: %s", err)
-	}
-	dbconfig := db.DBConfig{
-		Host:     os.Getenv("DB_HOST"),
-		Port:     os.Getenv("DB_PORT"),
-		User:     os.Getenv("DB_USER"),
-		Password: os.Getenv("DB_PASSWORD"),
-		Dbname:   os.Getenv("DB_NAME"),
-	}
-	db := db.BuildDBConfig(dbconfig)
-	defer db.Close()
-	wallet, err := services.GetBalance(db, in.GetWalletId(), in.GetUserId())
-	if err != nil {
-		fmt.Println("err: ", err)
-	}
-	b, _ := wallet.Balance.Float64()
-	return &pb.GetBalanceReply{Balance: float32(b)}, nil
-}
 
 var RootCmd = &cobra.Command{Use: "app"}
 
@@ -78,7 +49,7 @@ func runWithRest() {
 	if err != nil {
 		log.Fatalf("Error loading .env file: %s", err)
 	}
-	var dbconfig = db.DBConfig{
+	dbconfig := db.DBConfig{
 		Host:     os.Getenv("DB_HOST"),
 		Port:     os.Getenv("DB_PORT"),
 		User:     os.Getenv("DB_USER"),
@@ -97,13 +68,25 @@ func runWithRest() {
 
 func runWithGRPC() {
 	fmt.Println("Running with gRPC server...")
-	// Add your gRPC server startup logic here
+	err := godotenv.Load(".env")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %s", err)
+	}
+	dbconfig := db.DBConfig{
+		Host:     os.Getenv("DB_HOST"),
+		Port:     os.Getenv("DB_PORT"),
+		User:     os.Getenv("DB_USER"),
+		Password: os.Getenv("DB_PASSWORD"),
+		Dbname:   os.Getenv("DB_NAME"),
+	}
+	db := db.BuildDBConfig(dbconfig)
+	defer db.Close()
 	lis, err := net.Listen("tcp", ":50051")
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	s := grpc.NewServer()
-	pb.RegisterGetBalanceServer(s, &servers{})
+	pb.RegisterGetBalanceServer(s, &grpcserver.GrpcServer{Db: db})
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}
